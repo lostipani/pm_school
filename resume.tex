@@ -1,0 +1,100 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+%\usepackage[lmodern]{fontenc}
+\usepackage[left=3cm, right=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[all]{hypcap}
+\usepackage{placeins}
+
+\title{Progetto sensor.community - Liceo Scientifico G.Galilei, Trento - a.s. 2021/2022}
+\date{30 Giugno 2022}
+\author{Lorenzo Stipani \\ \small{\url{lorenzo.stipani@gmail.com}}}
+
+\begin{document}
+\maketitle
+
+Il progetto sensor.community è stato sviluppato in Germania e punta a costituire una dotazione mondiale di sensori per il monitoraggio degli inquinanti atmosferici, su base volontaria e privata aderendo alla filosofia del DIY e dell'open source. 
+
+Si è deciso di partecipare a questo progetto nell'ambito del programma di Educazione Civica e Cittadinanza (ECC) per due classi quinte in collaborazione tra le materie di Scienze ed Informatica. Il lavoro ha avuto il merito non solo di coinvolgere gli studenti su un tema importante per l'ambiente locale e per la salute ma anche di far conoscere la scienza dei dati, trasmettere loro il significato sociale del libero accesso ai dati e metterli a contatto con il metodo scientifico.
+
+La centralina, nome adottato a scuola al posto dell'ufficiale \emph{sensor}, si compone di un sensore \textsc{SDS011} di particolato PM 2.5 (diametro 2.5 $\mu$m) e PM 10 (diametro 10 $\mu$m), di un chip \textsc{DHT22} con sensori per temperatura, pressione ed umidità, montati su un micro-controllore Espressif \textsc{ESP8266}. Quest'ultimo è nativamente equipaggiato con un modulo wi-fi che permette di collegare la centralina alla rete di scuola per l'invio automatico dei dati, ogni giorno intorno alle ore 5 AM, ai server della community.
+
+Il sampling rate del sensore di particolato è di circa 3 minuti quindi ogni giorno vengono registrati segnali lunghi poco meno di 500 punti che rappresentano la densità di PM misurata in $\mu\mathrm{g}/\mathrm{m}^3$. Si hanno due serie temporali per ognuno dei due diametri misurati. Il signal-to-noise ratio è sufficientemente alto. Questo garantisce che le misurazioni siano significative, almeno sui tempi scala delle ore. Inoltre permette di confrontare gli stessi intervalli orari di giorni diversi, identificare le stagionalità ed avere una quantità di punti sperimentali adatta ad effettuare studi di correlazione con misurazioni di altri inquinanti, e.g. quelle disponibili dall'APPA di Trento.
+
+Sia i dati delle centraline sensor.community sia quelli dei sensori dell'APPA possono essere scaricati attraverso delle routine sviluppate in classe. Queste sono ancora in fase di sviluppo, liberamente distribuite (ogni collaborazione è benvenuta!) e sono raggiungibili all'indirizzo: \url{https://gitlab.com/lorenzo.stipani/codeschool/-/tree/main/centraline}. Qualche esempio di rappresentazione dei dati è mostrato nei plot di Figura \ref{fig:sens_ex}.
+
+Gli studenti che hanno voluto fare un lavoro per la valutazione di ECC si sono divisi in tre gruppi (max 3 per gruppo) ed hanno prodotto risultati interessanti, a dimostrazione delle grandi potenzialità della centralina e di tutto l'ecosistema di dati sull'inquinamento atmosferico liberamente disponibile online. Un gruppo si è dedicato alla ricerca di dati meteorologici per la zona di Trento da correlare con le misurazioni di diversi inquinanti atmosferici. Gli studenti hanno implementato un \emph{pre-processing} dei dati, necessario perché i campionamenti delle diverse serie temporali fossero uniformi, scegliendo la sequenza con più punti calcolando la media per la finestra temporale corrispondente all'unico punto dell'altra sequenza. Si sono ottenute, così, due serie della stessa lunghezza e con valori corrispondenti agli stessi istanti tempo. Ulteriore pulizia dei dati può comprendere: filtrare il rumore ad alta frequenza, eliminare le misurazioni spurie, isolare gli andamenti deterministici, stimare i momenti delle distribuzioni dei valori misurati, etc. Queste tecniche, però, sono state solo accennate in classe.
+
+Un secondo gruppo ha evidenziato gli effetti del primo lockdown dovuto al covid-19 nel 2020 utilizzando le misurazioni del particolato atmosferico, ottenute però da sensori di altri enti per avere dati nell'ultimo decennio. Gli studenti si sono resi conto della presenza di un \emph{confounding factor}: la dimunzione di PM in città è stata registrata in tutti gli anni a partire da Marzo/Aprile. Tuttavia sono riusciti ad evidenziare una diversa velocità di diminuzione nell'anno 2020 rispetto agli anni precedenti tale da suggerire una repentina diminuzione delle attività inquinanti, in linea con l'ipotesi di lavoro.
+
+L'ultimo gruppo si è cimentato nell'allenamento di una rete neurale con i dati dalla centralina in cui si osservava un comportamento qualitativamente simile nell'arco di qualche settimana. Usando parte del dataset come test, l'algoritmo ha fornito previsioni delle misurazioni di PM 2.5 e PM 10 con un ottimo rate di successo.
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{sensor_map.png}
+\label{fig:sensor_map}
+\caption{Homepage del sito sensor.community con la mappa centrata sul Liceo Scientifico ``Galilei'' di Trento ed il monitor della centralina lì installata. Notare in alto a destra dello pagina il simbolo di GitHub: tutti i sorgenti sono pubblici perché chiunque possa dare il suo contributo.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{sensor_cent.png}
+\label{fig:sensor_cent}
+\caption{La centralina è composta dal micro-controllore (MCU) ESP8266, sensore di temperatura, umidità e pressione ed il sensore di particolato.}
+\end{figure}
+
+Si raccomanda di fare riferimento alle seguenti pagine:
+\begin{itemize}
+\item \url{https://sensor.community.com/it}: Homepage italiana dove trovare anche la guida all'assemblaggio della centralina.
+\item \url{https://forum.sensor.community/}: Forum della community.
+\item \url{https://devices.sensor.community/}: Pagina per iscrivere una centralina e conoscere i codici identificativi assegnati ad ogni sensore sulla centralina. Per accedere richiedere le credenziali e password mandando un'email a \texttt{lorenzo(dot)stipani(at)gmail(dot)com}.
+\item \url{https://archive.sensor.community/}: Pagina d'archivio di fogli .csv, uno per giorno per sensore.
+\item \url{https://github.com/opendata-stuttgart}: Pagina GitHub ufficiale del progetto con i sorgenti dei codici.
+\item \url{https://api-rrd.madavi.de/grafana/d/GUaL5aZMz/pm-sensors?var-chipID=esp8266-182415&orgId=1}: Pagina ``Grafana'' con gli \emph{scope} della centralina installata a scuola (esp8266-182415) in cui si può monitorare sia i dati raccolti sia lo status della connessione wi-fi ed al server.
+\end{itemize}
+
+Di seguito gli ID della centralina installata a scuola e componenti. Si noti che per accedere ai dati si devono utilizzare i codici dei sensori, non del micro-controllore.
+
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+ID ESP8266 (su Grafana) & 182415\\
+\hline
+ID mappa/archivio sensore SDS011 (PM2.5, PM10) & 57925\\
+\hline
+ID mappa/archivio sensore DHT22 (Temp. Press. Umid.) & 57926\\
+\hline
+altro & 31184\\
+\hline
+\end{tabular}
+\end{center}
+
+Il dispositivo è posizionato in una presa d'aria ad altezza del pavimento nel locale d'ingresso del laboratorio di fisica, vedi Figura \ref{fig:sens_foto}. I sensori sono così esposti all'esterno e protetti dalle intemperie con un giunto in PVC (tipo idraulico). Il particolato viene aspirato dal sensore attraverso un tubicino flessibile su cui è montato il sensore DHT22. Tuttavia, nonostante in assenza di questo sensore la centralina non funzioni, attualmente le misurazioni di temperatura, pressione ed umidità non vengono effettuate e l'origine del problema dev'essere ancora individuata. La connessione wi-fi al server è garantita da un vicino router dedicato con SIM card (Vodafone). Questa soluzione si è resa necessaria dal momento che il firmware installato sul micro-controllore non permette la connessione di tipo WPA2 Enterprise, che è il protocollo di sicurezza adottato nella scuola. L'alimentazione è fornita con un cavo USB ed un trasformatore collegati alla rete elettrica. Delle parti di ricambio sono a disposizione. Si ha al più un'altra centralina completa da poter assemblare ed installare. 
+
+Occasionalmente (fino ad ora due volte in più di quattro mesi) la centralina si disconnette da internet. La soluzione che sembra risolvere senza grandi difficoltà è di riavviarla disconnettendo e riconnettendo l'alimentazione. Per problemi HW di altro genere si invita a: controllare le connessioni e, comunque, riferirsi alle pagine web riportate sopra.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.4\textwidth]{sens_foto1.jpg}
+\includegraphics[width=.4\textwidth]{sens_foto2.jpg}
+\includegraphics[width=.4\textwidth]{sens_foto3.jpg}
+\includegraphics[width=.4\textwidth]{sens_foto4.jpg}
+\end{center}
+\label{fig:sens_foto}
+\caption{La centralina assemblata, connessa al wi-fi tramite router, alimentata ed installata nella presa d'aria presso il Laboratorio di Fisica.}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=\textwidth]{sens_ex1.png}
+\includegraphics[width=.49\textwidth]{sens_ex2.png}
+\includegraphics[width=.49\textwidth]{sens_ex3.png}
+\end{center}
+\label{fig:sens_ex}
+	\caption{Plot di esempio ottenuti dai dati della centralina installata a scuola e dai sensori dell'APPA.}
+\end{figure}
+
+\end{document}
+
